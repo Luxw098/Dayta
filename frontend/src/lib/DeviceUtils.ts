@@ -9,12 +9,12 @@ export type LocalData = {
 
 class DeviceUtils {
   static local_data = {
-    get: async (key: string) => {
+    get: (key: string) => {
       const local_data = localStorage.getItem(key);
       return local_data ? JSON.parse(local_data) : null;
     },
 
-    set: async (key: string, value: any) => {
+    set: (key: string, value: any) => {
       const local_data = JSON.stringify(value);
       localStorage.setItem(key, local_data);
       return local_data;
@@ -23,10 +23,11 @@ class DeviceUtils {
 
 
   static cookies = {
-    get: async () => {
-      return Cookies.get();
+    get: (key?: string) => {
+      const cookies = Cookies.get();
+      return (key) ? cookies[key] : cookies;
     },
-    set: async (key: string, value: string, options?: Cookies.CookieAttributes) => {
+    set: (key: string, value: string, options?: Cookies.CookieAttributes) => {
       return Cookies.set(key, value, options);
     }
   };

@@ -35,21 +35,23 @@
     
   });
 
-
-  const currentlySelected = 0;
-  let messageLogs: {[x: string]: any}[] = $state([]); 
-  (async() => {
-      await DeviceUtils.local_data.set("messageLogs", Array.from({ length: 10 }, (_, index) => ({
+  DeviceUtils.local_data.set("messageLogs", Array.from({ length: 15 }, (_, index) => ({
             recipient: `user ${index + 1}`,
             messages: [
-              { timestamp: Date.now() - 1000000, sender: `user ${index + 1}`, content: "Message 1" },
-              { timestamp: Date.now() - 10000, sender: `user ${index + 1}`,content: "Message 2" },
+              { timestamp: Date.now() - 960000, sender: `user ${index + 1}`, content: "Message 1 " + index  },
+              { timestamp: Date.now() - 480000, sender: `user ${index + 1}`,content: "Message 2 " + index },
+              { timestamp: Date.now() - 240000, sender: `user ${index + 1}`,content: "Message 3 " + index },
+              { timestamp: Date.now() - 120000, sender: `user ${index + 1}`,content: "Message 4 " + index },
+              { timestamp: Date.now() - 60000, sender: `user ${index + 1}`,content: "Message 5 " + index },
+              { timestamp: Date.now() - 30000, sender: `user ${index + 1}`,content: "Message 6 " + index },
+              { timestamp: Date.now() - 15000, sender: `user ${index + 1}`,content: "Message 7 " + index },
+              { timestamp: Date.now() - 7500, sender: `user ${index + 1}`,content: "Message 8 " + index },
               { timestamp: Date.now(), sender: `you`,content: "Current Message" }
             ]
         })));
 
-    messageLogs = await DeviceUtils.local_data.get("messageLogs");
-  })();
+  const currentlySelected = 0;
+  let messageLogs: {[x: string]: any}[] = $state(DeviceUtils.local_data.get("messageLogs")); 
 </script>
 
 <head>
@@ -57,38 +59,52 @@
 </head>
 
 <page id="content">
-  <div class="content" id="messageList">
-    {#each messageLogs as log}
-      <!-- svelte-ignore a11y_missing_attribute -->
-      <a class="messageLog">
-        <div class="messageLogRecipient">{log.recipient}</div>
-        <p class="messageLogContent"><i class="fa-solid fa-envelope"></i>{log.messages[log.messages.length-1].content}</p>
-      </a>
-    {/each}
-  </div>
-  <span></span>
-  <div class="content" id="chat">
-    <div id="chatHistory">
-      {#each messageLogs[currentlySelected]?.messages as message}
-        <div class="message {(message.sender == 'you') ? 'right':''}">
-          <div>
-            <p class="messageSender">{message.sender}</p>
-            <span></span>
-            <p class="messageTimestamp">{message.timestamp}</p>
-          </div>
-          <p class="messageContent">{message.content}</p>
-        </div>
+  {#if DeviceUtils.cookies.get("jwt") != null}
+    <div class="content" id="messageList">
+      {#each messageLogs as log}
+        <!-- svelte-ignore a11y_missing_attribute -->
+        <a class="messageLog">
+          <div class="messageLogRecipient">{log.recipient}</div>
+          <p class="messageLogContent"><i class="fa-solid fa-envelope"></i>{log.messages[log.messages.length-1].content}</p>
+        </a>
       {/each}
     </div>
-    <div id="chatToolbar">
-      <input type="text" id="messageInput">
-      <!-- svelte-ignore a11y_consider_explicit_label -->
-      <a id="sendMessage"><i class="fa-solid fa-paper-plane"></i></a>
+    <span></span>
+    <div class="content" id="chat">
+      <div id="chatHistory">
+        {#each messageLogs[currentlySelected]?.messages as message}
+          <div class="message {(message.sender == 'you') ? 'right':''}">
+            <div>
+              <p class="messageSender">{message.sender}</p>
+              <span></span>
+              <p class="messageTimestamp">{message.timestamp}</p>
+            </div>
+            <p class="messageContent">{message.content}</p>
+          </div>
+        {/each}
+      </div>
+      <div id="chatToolbar">
+        <input type="text" id="messageInput">
+        <!-- svelte-ignore a11y_consider_explicit_label -->
+        <a id="sendMessage"><i class="fa-solid fa-paper-plane"></i></a>
+      </div>
     </div>
-  </div>
+  {:else}
+    <div id="notlogg">
+      <a href="/account">Log in.</a>
+    </div>
+  {/if}
 </page>
 
 <style>
+  #notlogg {
+    column-span: 2;
+    width: 100%;
+    height: 100%;
+    font-size: 2rem;
+    padding: 20px;
+  }
+
   #content {
     display: grid;
     grid-template-columns: 1fr 11px 2.5fr;
@@ -106,8 +122,10 @@
 
   #messageList {
     height: 100%;
+    overflow: scroll;
   }
   .messageLog {
+    min-height: 55px;
     background: linear-gradient(to right, var(--fgColour), transparent);
     border-bottom: 1px solid var(--fgColour);
     padding: 5px;
@@ -131,6 +149,7 @@
 
 
   
+
   #chatHistory {
     display: flex;
     flex-direction: column;
@@ -138,12 +157,14 @@
     width: 100%;
     height: 90%;
     padding: 10px;
+    overflow: scroll;
   }
   #chatHistory .right {
     margin-right: 0;
     margin-left: auto;
   }
   .message {
+    min-height: 60px;
     margin-right: auto;
     width: clamp(10%, min-content, 80%);
     background-color: var(--fgColour);
