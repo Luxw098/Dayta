@@ -5,13 +5,13 @@ import { createHash } from 'crypto';
 @Injectable()
 class AccountsService {
   constructor(private readonly prisma: IPrisma) {}
-  async exists(username: string) {
+  async find(username: string) {
     return await this.prisma.userData.findUnique({
       where: { username },
-    }) != null;
+    });
   }
 
-  async validate(username: string, pass_hash: string) {
+  async validateLogin(username: string, pass_hash: string) {
     const account = await this.prisma.userData.findUnique({
       where: { username },
     });

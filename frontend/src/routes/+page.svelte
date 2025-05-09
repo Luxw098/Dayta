@@ -1,5 +1,6 @@
 <script lang="ts">
   /* Local_storage structure
+    user: string
     messageLogs = [
       {
         id: number
@@ -21,6 +22,7 @@
 
   //@ts-expect-error
   import * as io from "socket.io-client";
+    import { onMount } from "svelte";
   let socket = io.connect(NetworkUtils.getWebSocketURL(), {
     transports: ['websocket'],
     timeout: 3000
@@ -34,24 +36,39 @@
 
     
   });
-
+  DeviceUtils.local_data.set("user", "test")
   DeviceUtils.local_data.set("messageLogs", Array.from({ length: 15 }, (_, index) => ({
             recipient: `user ${index + 1}`,
             messages: [
               { timestamp: Date.now() - 960000, sender: `user ${index + 1}`, content: "Message 1 " + index  },
-              { timestamp: Date.now() - 480000, sender: `user ${index + 1}`,content: "Message 2 " + index },
-              { timestamp: Date.now() - 240000, sender: `user ${index + 1}`,content: "Message 3 " + index },
-              { timestamp: Date.now() - 120000, sender: `user ${index + 1}`,content: "Message 4 " + index },
-              { timestamp: Date.now() - 60000, sender: `user ${index + 1}`,content: "Message 5 " + index },
-              { timestamp: Date.now() - 30000, sender: `user ${index + 1}`,content: "Message 6 " + index },
-              { timestamp: Date.now() - 15000, sender: `user ${index + 1}`,content: "Message 7 " + index },
-              { timestamp: Date.now() - 7500, sender: `user ${index + 1}`,content: "Message 8 " + index },
-              { timestamp: Date.now(), sender: `you`,content: "Current Message" }
+              { timestamp: Date.now() - 480000, sender: `you`,content: "Message 2 " + index },
+              { timestamp: Date.now() - 240000, sender: `user ${index + 1}`, content: "Message 3 " + index },
+              { timestamp: Date.now() - 120000, sender: `you`,content: "Message 4 " + index },
+              { timestamp: Date.now() - 60000, sender: `user ${index + 1}`, content: "Message 5 " + index },
+              { timestamp: Date.now() - 30000, sender: `you`,content: "Message 6 " + index },
+              { timestamp: Date.now() - 15000, sender: `user ${index + 1}`, content: "Message 7 " + index },
+              { timestamp: Date.now() - 7500, sender: `user ${index + 1}`, content: "Message 8 " + index },
+              { timestamp: Date.now(), sender: `you`, content: "Current Message" }
             ]
         })));
 
+  let validated = $state(false);
+
   const currentlySelected = 0;
   let messageLogs: {[x: string]: any}[] = $state(DeviceUtils.local_data.get("messageLogs")); 
+
+  let messageInput: HTMLInputElement;
+
+  function clickSend(event: any) {
+    const content = messageInput.value;
+  }
+
+  onMount(async() => {
+    await new Promise<void>((res) => setTimeout(() => {res()}, 250));
+
+    messageInput = document.getElementById("messageInput") as HTMLInputElement;
+    validated = await NetworkUtils.validateJwt(DeviceUtils.cookies.get("jwt") as string);
+  });
 </script>
 
 <head>
@@ -59,7 +76,7 @@
 </head>
 
 <page id="content">
-  {#if DeviceUtils.cookies.get("jwt") != null}
+  {#if validated}
     <div class="content" id="messageList">
       {#each messageLogs as log}
         <!-- svelte-ignore a11y_missing_attribute -->
@@ -86,7 +103,7 @@
       <div id="chatToolbar">
         <input type="text" id="messageInput">
         <!-- svelte-ignore a11y_consider_explicit_label -->
-        <a id="sendMessage"><i class="fa-solid fa-paper-plane"></i></a>
+        <button onclick={clickSend} id="sendMessage"><i class="fa-solid fa-paper-plane"></i></button>
       </div>
     </div>
   {:else}
@@ -107,7 +124,7 @@
 
   #content {
     display: grid;
-    grid-template-columns: 1fr 11px 2.5fr;
+    grid-template-columns: 1fr 3px 2.5fr;
     grid-template-rows: 100%;
     width: min(90vw, 700px);
     height: min(80vh, 500px);
@@ -126,11 +143,12 @@
   }
   .messageLog {
     min-height: 55px;
-    background: linear-gradient(to right, var(--fgColour), transparent);
+    background:  var(--bgColour);
     border-bottom: 1px solid var(--fgColour);
     padding: 5px;
   }
   .messageLogRecipient {
+    color: var(--hlColour);
     font-size: 1rem;
   }
   .messageLogContent {
@@ -140,8 +158,7 @@
   }
 
   span {
-    width: 1px;
-    margin: 0 0 0 10px;
+    width: 2px;
     background-color: var(--fgColour);
   }
 
@@ -160,6 +177,8 @@
     overflow: scroll;
   }
   #chatHistory .right {
+    background-color: var(--hlColour);
+    color: var(--bgColour);
     margin-right: 0;
     margin-left: auto;
   }
@@ -210,10 +229,12 @@
   #sendMessage {
     transition: all 0.2s ease-in-out;
     width: 9%;
+    background-color: transparent;
     border: 1px solid var(--bgColour);
     border-bottom: 3px solid var(--bgColour);
     border-radius: 10px;
     padding: 1.5%;
+    color: var(--hlColour);
   }
   #sendMessage:hover {
     transform: translateY(-1px);

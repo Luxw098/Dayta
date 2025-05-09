@@ -1,9 +1,7 @@
 import { Controller, Get, Post, Body } from '@nestjs/common';
 import JwtService from '..//db/jwt.service';
 import AccountsService from "../db/accounts.service";
-import imports from "../imports";
-
-import { privateDecrypt } from "crypto";
+import EncryptionUtils from 'src/util/EncryptionUtils';
 
 @Controller("/api/auth")
 export class AuthController {
@@ -22,58 +20,39 @@ export class AuthController {
   }
 
   @Post("/updatesession")
-  async getUpdateSession() {
+  async getUpdateSession(@Body() body: any) {
+    console.log(EncryptionUtils.decryptData(body["user"]));
+
+    const jwt = EncryptionUtils.decryptData(body["user"]);
+
+    const jwt_data = await this.jwt.find(body["user"]);
+    if (!jwt_data) return {
+      status: "error",
+      code: "404"
+    };
+
+    if (jwt_data.jwt != jwt) return {
+      status: "error",
+      code: "401"
+    };
+
     return {
       status: "ok",
       code: "200",
-      message: ""
-    }
+      headers: {
+        "set-cookie": `jwt=${jwt}; Secure; SameSite=Strict; Path=/;`
+      }
+    };
   }
 
   @Post("/register")
   async getRegister(@Body() body: any) {
-
+    
   }
 
   @Post("/login")
   async getLogin(@Body() body: any) {
-    try {
-      const private_key = imports.IAppService.getPrivateKey();
-      const decryption_settings = {
-        key: private_key,
-        oaepHash: "sha256"
-      };
 
-      const username = privateDecrypt(decryption_settings, Buffer.from(body["user"], 'base64')).toString();
-      if (!this.accounts.exists(username)) return {
-        status: "error",
-        code: 404
-      };
-
-      const pass_hash = privateDecrypt(decryption_settings, Buffer.from(body["pass"], 'base64')).toString();
-      
-      if (!username || !pass_hash) return;
-
-      const result = await this.jwt.create(
-        username,
-        pass_hash
-      );
-      if (!result) return {
-        status: "error",
-        code: 401
-      };
-
-      return {
-        status: "ok",
-        code: 200,
-        message: result
-      };
-    } catch {
-      return {
-        status: "error",
-        code: 400
-      };
-    }
   }
 }
 export default AuthController

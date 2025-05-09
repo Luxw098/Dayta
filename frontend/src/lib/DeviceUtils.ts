@@ -10,13 +10,15 @@ export type LocalData = {
 class DeviceUtils {
   static local_data = {
     get: (key: string) => {
-      const local_data = localStorage.getItem(key);
-      return local_data ? JSON.parse(local_data) : null;
+      const value = localStorage.getItem(key);
+      if (!value) return null
+      const local_data = atob(value);
+      return JSON.parse(local_data);
     },
 
     set: (key: string, value: any) => {
       const local_data = JSON.stringify(value);
-      localStorage.setItem(key, local_data);
+      localStorage.setItem(key, btoa(local_data));
       return local_data;
     }
   };

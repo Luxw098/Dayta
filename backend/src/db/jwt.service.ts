@@ -10,7 +10,8 @@ class JwtService {
     private readonly accounts: IAccounts) {}
 
   async create(username: string, pass_hash: string) {
-    if (!(await this.accounts.exists(username))) return null;
+    const found_acc = await this.accounts.find(username);
+    if (found_acc != null) return found_acc;
 
     const token = btoa(sign({ username, pass_hash }, imports.IAppService.getPrivateKey(), {
       algorithm: 'RS256',
