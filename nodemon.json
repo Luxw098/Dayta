@@ -3,5 +3,5 @@
   "watch": ["frontend", "backend"],
   "ext": "ts, js, json, svelte",
   "ignore": ["node_modules", "*/dist", "*/build", "*/test"],
-  "exec": "concurrently --names Back-End,Front-End --prefix-colors red,cyan \"cd backend & bun run start:dev\" \"cd frontend & bun run dev\""
+  "exec": "concurrently --names Back-End,Front-End --prefix-colors red,cyan \"cd backend && bun run start:dev\" \"cd frontend && bun run dev\""
 }

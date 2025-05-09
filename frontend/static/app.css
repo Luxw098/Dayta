@@ -1,9 +1,17 @@
-:root{
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+:root {
   --bgColour: #111;
   --fgColour: #222;
   --sdColour: #00000099;
-  --txtColour: #eee;
+  --txtColour: #ffffff99;
   --hlColour: #7777ff;
+}
+
+* {
+  font-family: "Open Sans", sans-serif;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 body {
@@ -24,23 +32,18 @@ main {
 }
 
 nav {
-  min-height: 25px;
+  height: 45px;
   background: var(--fgColour);
   box-shadow: 0 0 10px black;
-  padding: 10px;
+  padding: 5px;
 }
 
 a {
   transition: all 0.2s ease-in-out;
   color: var(--txtColour);
   text-decoration: none;
-  font-size: 1.2em;
 }
 a:hover {
-  text-decoration: underline;
   color: var(--hlColour);
-}
-
-.right {
-  float: right;
+  cursor: pointer;
 }

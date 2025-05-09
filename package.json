@@ -5,7 +5,9 @@
     "prebuild": "rimraf dist && rimraf frontend/build && rimraf ./backend/dist",
     "copy": "mkdir dist && copyfiles -u 2 frontend/build/**/* dist/frontend && copyfiles -u 2 backend/dist/**/* dist/backend",
     "build": "bun run prebuild && concurrently  --names Back-End,Front-End --prefix-colors red,cyan \"cd backend && bun run build\" \"cd frontend && bun run build\" && bun run copy",
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "dev:backend": "cd backend && bun run start:dev",
+    "dev:frontend": "cd frontend && bun run dev"
   },
   "packageManager": "pnpm@10.5.2",
   "devDependencies": {

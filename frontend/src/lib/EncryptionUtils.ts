@@ -18,7 +18,6 @@ async function generateKeyPair() {
 
 	keys.public = keyPair.publicKey;
 	keys.private = keyPair.privateKey;
-	console.log(keyPair.privateKey)
 };
 generateKeyPair();
 
