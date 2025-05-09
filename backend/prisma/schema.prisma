@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model UserData {
+  id        Int       @id @default(autoincrement())
+  username  String    @unique
+  lastlogin DateTime  @default(now())
+  salt      String
+  passhash  String
+}
+
+model JwtData {
+  id        Int       @id @default(autoincrement())
+  username  String    @unique
+  expires   DateTime
+  jwt       String
+}
+
+model ChatValidationData {
+  id            Int     @id @default(autoincrement())
+  participants  String // list of username hashes (format: user,user,user)
+  chatHash      String // last agreed chat history hash
+}

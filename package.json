@@ -1,0 +1,21 @@
+{
+  "scripts": {
+    "db": "cd backend && bun prisma migrate dev --name init && bun prisma generate",
+    "setup": "bun i && cd frontend && bun i && cd ../backend && bun i",
+    "prebuild": "rimraf dist && rimraf frontend/build && rimraf ./backend/dist",
+    "copy": "mkdir dist && copyfiles -u 2 frontend/build/**/* dist/frontend && copyfiles -u 2 backend/dist/**/* dist/backend",
+    "build": "bun run prebuild && concurrently  --names Back-End,Front-End --prefix-colors red,cyan \"cd backend && bun run build\" \"cd frontend && bun run build\" && bun run copy",
+    "dev": "nodemon"
+  },
+  "packageManager": "pnpm@10.5.2",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "preferGlobal": true,
+  "dependencies": {
+    "copyfiles": "^2.4.1",
+    "node-jsencrypt": "^1.0.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.0.0"
+  }
+}

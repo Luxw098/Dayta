@@ -1,0 +1,4 @@
+{
+  "include": ["backend", "frontend"],
+  "exclude": ["node_modules"],
+}
