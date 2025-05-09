@@ -1,4 +1,20 @@
 <script lang="ts">
+  /* Local_storage structure
+    messageLogs = [
+      {
+        id: number
+        recipients: [username,username]
+        message: [
+          {
+            timestamp: number
+            sender: username
+            content: string
+          }
+        ]
+      }
+    ]
+  */
+
   import EncryptionUtils from "$lib/EncryptionUtils";
   import DeviceUtils from "$lib/DeviceUtils";
   import NetworkUtils from "$lib/NetworkUtils";
@@ -19,24 +35,21 @@
     
   });
 
-  const messageLogs = [
-    {
-      recipient: "user 1",
-      messages: [
-        { timestamp: Date.now()-1000000, content: "Message 1"},
-        { timestamp: Date.now()-10000, content: "Message 2"},
-        { timestamp: Date.now(), content: "Current Message"}
-      ]
-    },
-        {
-      recipient: "user 2",
-      messages: [
-        { timestamp: Date.now()-1000000, content: "Message 1"},
-        { timestamp: Date.now()-10000, content: "Message 2"},
-        { timestamp: Date.now(), content: "Current Message"}
-      ]
-    }
-  ];
+
+  const currentlySelected = 0;
+  let messageLogs: {[x: string]: any}[] = $state([]); 
+  (async() => {
+      await DeviceUtils.local_data.set("messageLogs", Array.from({ length: 10 }, (_, index) => ({
+            recipient: `user ${index + 1}`,
+            messages: [
+              { timestamp: Date.now() - 1000000, sender: `user ${index + 1}`, content: "Message 1" },
+              { timestamp: Date.now() - 10000, sender: `user ${index + 1}`,content: "Message 2" },
+              { timestamp: Date.now(), sender: `you`,content: "Current Message" }
+            ]
+        })));
+
+    messageLogs = await DeviceUtils.local_data.get("messageLogs");
+  })();
 </script>
 
 <head>
@@ -44,8 +57,9 @@
 </head>
 
 <page id="content">
-  <div id="messageList">
+  <div class="content" id="messageList">
     {#each messageLogs as log}
+      <!-- svelte-ignore a11y_missing_attribute -->
       <a class="messageLog">
         <div class="messageLogRecipient">{log.recipient}</div>
         <p class="messageLogContent"><i class="fa-solid fa-envelope"></i>{log.messages[log.messages.length-1].content}</p>
@@ -53,14 +67,23 @@
     {/each}
   </div>
   <span></span>
-  <div id="chat">
+  <div class="content" id="chat">
     <div id="chatHistory">
-      <div id="messa">
-        test
-      </div>
+      {#each messageLogs[currentlySelected]?.messages as message}
+        <div class="message {(message.sender == 'you') ? 'right':''}">
+          <div>
+            <p class="messageSender">{message.sender}</p>
+            <span></span>
+            <p class="messageTimestamp">{message.timestamp}</p>
+          </div>
+          <p class="messageContent">{message.content}</p>
+        </div>
+      {/each}
     </div>
     <div id="chatToolbar">
-      test
+      <input type="text" id="messageInput">
+      <!-- svelte-ignore a11y_consider_explicit_label -->
+      <a id="sendMessage"><i class="fa-solid fa-paper-plane"></i></a>
     </div>
   </div>
 </page>
@@ -68,25 +91,25 @@
 <style>
   #content {
     display: grid;
-    grid-template-columns: 1fr 21px 2.5fr;
+    grid-template-columns: 1fr 11px 2.5fr;
     grid-template-rows: 100%;
     width: min(90vw, 700px);
     height: min(80vh, 500px);
     border: 2px solid var(--fgColour);
     border-radius: 15px;
+    padding: 0;
   }
-  #content div {
+  .content {
     display: flex;
     flex-direction: column;
   }
 
   #messageList {
     height: 100%;
-    gap: 1%;
   }
   .messageLog {
-    background-color: var(--fgColour);
-    border-radius: 10px;
+    background: linear-gradient(to right, var(--fgColour), transparent);
+    border-bottom: 1px solid var(--fgColour);
     padding: 5px;
   }
   .messageLogRecipient {
@@ -95,23 +118,86 @@
   .messageLogContent {
     display: flex;  
     align-items: center;
-    margin: 0;
     font-size: 0.8rem;
   }
 
   span {
     width: 1px;
-    margin: 0 10px 0 10px;
+    margin: 0 0 0 10px;
     background-color: var(--fgColour);
   }
 
+
+
+
+  
   #chatHistory {
+    display: flex;
+    flex-direction: column;
+    gap: 2%;
+    width: 100%;
     height: 90%;
+    padding: 10px;
   }
+  #chatHistory .right {
+    margin-right: 0;
+    margin-left: auto;
+  }
+  .message {
+    margin-right: auto;
+    width: clamp(10%, min-content, 80%);
+    background-color: var(--fgColour);
+    border-radius: 10px;
+    padding: 2%;
+  }
+
+  .message div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    opacity: 0.6;
+  }
+  .message div * {
+    font-size: 0.8rem;
+  }
+
+
+
+
   #chatToolbar {
     height: 10%;
-    background-color: var(--fgColour);
-    border-radius: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to top, var(--fgColour), transparent);
+    border-radius: 15px 15px 0 0;
+    padding: 1.5%;
+  }
 
+  #messageInput {
+    width: 90%;
+    outline: none;
+    background-color: transparent;
+    color: var(--txtColour);
+    border: 1px solid var(--bgColour);
+    border-bottom: 3px solid var(--bgColour);
+    border-radius: 10px;
+    padding: 1.5%;
+    gap: 1%;
+  }
+
+  #sendMessage {
+    transition: all 0.2s ease-in-out;
+    width: 9%;
+    border: 1px solid var(--bgColour);
+    border-bottom: 3px solid var(--bgColour);
+    border-radius: 10px;
+    padding: 1.5%;
+  }
+  #sendMessage:hover {
+    transform: translateY(-1px);
+  }
+  #sendMessage:active {
+    transform: translateY(1px);
   }
 </style>
