@@ -7,7 +7,7 @@
     <meta name="description" content="nestjs app with svelte templates" />
     <meta name="author" content="Luxw098" />
     <meta name="keywords" content="nestjs, svelte, typescript, javascript" />
-    <link rel="stylesheet" href="/app.css"></link>
+    <link rel="stylesheet" lang="scss" href="/app.scss"></link>
     <script src="https://kit.fontawesome.com/8ab3690583.js" crossorigin="anonymous"></script>
 		%sveltekit.head%
 	</head>
@@ -33,7 +33,7 @@
 </html>
 
 
-<style>
+<style lang="scss">
   #content {
     padding: 10px;
   }
@@ -61,25 +61,29 @@
     grid-template-columns: 120px auto 100px;
     grid-template-rows: 100%;
     align-items: center;
+
+    * {
+      display: flex;
+      align-items: center;
+    }
   }
-  #topbar * {
-    display: flex;
-    align-items: center;
-  }
+
   #topbar_buttons {
     width: 100%;
     height: 100%;
     display: flex;
+
+    .topbar_button {
+      width: min(100%, 50px);
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      background-color: transparent;
+      padding: 1%;
+      color: var(--txtColour);
+    }
   }
-  .topbar_button {
-    width: min(100%, 50px);
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    background-color: transparent;
-    padding: 1%;
-    color: var(--txtColour);
-  }
+  
   span {
     width: 1px;
     height: 100%;

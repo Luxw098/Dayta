@@ -52,7 +52,7 @@
             ]
         })));
 
-  let validated = $state(false);
+  let validated = $state(true);
 
   const currentlySelected = 0;
   let messageLogs: {[x: string]: any}[] = $state(DeviceUtils.local_data.get("messageLogs")); 
@@ -67,7 +67,7 @@
     await new Promise<void>((res) => setTimeout(() => {res()}, 250));
 
     messageInput = document.getElementById("messageInput") as HTMLInputElement;
-    validated = await NetworkUtils.validateJwt(DeviceUtils.cookies.get("jwt") as string);
+    //validated = await NetworkUtils.validateJwt(DeviceUtils.cookies.get("jwt") as string);
   });
 </script>
 
@@ -113,13 +113,18 @@
   {/if}
 </page>
 
-<style>
+<style lang="scss">
   #notlogg {
     column-span: 2;
     width: 100%;
     height: 100%;
     font-size: 2rem;
     padding: 20px;
+  }
+
+  span {
+    width: 2px;
+    background-color: var(--fgColour);
   }
 
   #content {
@@ -131,39 +136,38 @@
     border: 2px solid var(--fgColour);
     border-radius: 15px;
     padding: 0;
-  }
-  .content {
-    display: flex;
-    flex-direction: column;
+
+    .content {
+      display: flex;
+      flex-direction: column;
+    }
   }
 
   #messageList {
     height: 100%;
     overflow: scroll;
-  }
-  .messageLog {
-    min-height: 55px;
-    background:  var(--bgColour);
-    border-bottom: 1px solid var(--fgColour);
-    padding: 5px;
-  }
-  .messageLogRecipient {
-    color: var(--hlColour);
-    font-size: 1rem;
-  }
-  .messageLogContent {
-    display: flex;  
-    align-items: center;
-    font-size: 0.8rem;
-  }
 
-  span {
-    width: 2px;
-    background-color: var(--fgColour);
+    .messageLog {
+      min-height: 55px;
+      background:  var(--bgColour);
+      border-bottom: 1px solid var(--fgColour);
+      padding: 5px;
+    }
+    .messageLog:hover {
+      background-color: var(--fgColour);
+      color: var(--hlColour);
+    }
+
+    .messageLogRecipient {
+      color: var(--hlColour);
+      font-size: 1rem;
+    }
+    .messageLogContent {
+      display: flex;  
+      align-items: center;
+      font-size: 0.8rem;
+    }
   }
-
-
-
 
   
 
@@ -175,30 +179,34 @@
     height: 90%;
     padding: 10px;
     overflow: scroll;
-  }
-  #chatHistory .right {
-    background-color: var(--hlColour);
-    color: var(--bgColour);
-    margin-right: 0;
-    margin-left: auto;
-  }
-  .message {
-    min-height: 60px;
-    margin-right: auto;
-    width: clamp(10%, min-content, 80%);
-    background-color: var(--fgColour);
-    border-radius: 10px;
-    padding: 2%;
-  }
 
-  .message div {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    opacity: 0.6;
-  }
-  .message div * {
-    font-size: 0.8rem;
+
+    .message {
+      min-height: 60px;
+      margin-right: auto;
+      width: clamp(10%, min-content, 80%);
+      background-color: var(--fgColour);
+      border-radius: 10px;
+      padding: 2%;
+
+      div {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        opacity: 0.6;
+
+        * {
+          font-size: 0.8rem;
+        }
+      }
+    }
+
+    .right {
+      background-color: var(--hlColour);
+      color: var(--bgColour);
+      margin-right: 0;
+      margin-left: auto;
+    }
   }
 
 
@@ -212,34 +220,36 @@
     background: linear-gradient(to top, var(--fgColour), transparent);
     border-radius: 15px 15px 0 0;
     padding: 1.5%;
-  }
 
-  #messageInput {
-    width: 90%;
-    outline: none;
-    background-color: transparent;
-    color: var(--txtColour);
-    border: 1px solid var(--bgColour);
-    border-bottom: 3px solid var(--bgColour);
-    border-radius: 10px;
-    padding: 1.5%;
-    gap: 1%;
-  }
+    #messageInput {
+      width: 90%;
+      outline: none;
+      background-color: transparent;
+      color: var(--txtColour);
+      border: 1px solid var(--bgColour);
+      border-bottom: 3px solid var(--bgColour);
+      border-radius: 10px;
+      padding: 1.5%;
+      gap: 1%;
+    }
 
-  #sendMessage {
-    transition: all 0.2s ease-in-out;
-    width: 9%;
-    background-color: transparent;
-    border: 1px solid var(--bgColour);
-    border-bottom: 3px solid var(--bgColour);
-    border-radius: 10px;
-    padding: 1.5%;
-    color: var(--hlColour);
-  }
-  #sendMessage:hover {
-    transform: translateY(-1px);
-  }
-  #sendMessage:active {
-    transform: translateY(1px);
+    #sendMessage {
+      transition: all 0.2s ease-in-out;
+      width: 9%;
+      background-color: transparent;
+      border: 1px solid var(--bgColour);
+      border-bottom: 3px solid var(--bgColour);
+      border-radius: 10px;
+      padding: 1.5%;
+      color: var(--hlColour);
+
+    }
+    #sendMessage:hover {
+        transform: translateY(-1px);
+    }
+
+    #sendMessage:active {
+      transform: translateY(1px);
+    }
   }
 </style>
