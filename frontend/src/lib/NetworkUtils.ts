@@ -127,10 +127,16 @@ class NetworkUtils {
 		});
 		if (exists_res[0]) login = true;
 
+		const encoder = new TextEncoder();
+		const data = encoder.encode(email);
+		const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+		const hashArray = Array.from(new Uint8Array(hashBuffer));
+		const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join(''); 
+
 		const response = await this.fetchAPI((login) ? "/auth/login":"/auth/register", {
 			method: "POST",
 			body: JSON.stringify({
-				email: await EncryptionUtils.encryptData(key, await subtle.digest("sha-256", new TextEncoder().encode(email))),
+				email: await EncryptionUtils.encryptData(key, hashHex),
 				user: await EncryptionUtils.encryptData(key, user),
 				pass: await EncryptionUtils.encryptData(key, pass)
 			})
