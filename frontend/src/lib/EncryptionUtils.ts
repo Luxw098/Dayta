@@ -1,29 +1,9 @@
 const subtle = window.crypto.subtle;
 
-const keys: { public: any, private: any } = {
-		public: null,
-		private: null
-};
-async function generateKeyPair() {
-	const keyPair = await window.crypto.subtle.generateKey(
-		{
-			name: "RSA-OAEP",
-			modulusLength: 2048,
-			publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-			hash: "SHA-256"
-		},
-		true,
-		["encrypt", "decrypt"]
-	);
 
-	keys.public = keyPair.publicKey;
-	keys.private = keyPair.privateKey;
-};
-generateKeyPair();
 
 
 class EncryptionUtils {
-    public static keys = keys;
 
     private static arrayBufferToBase64 = (buffer: ArrayBuffer) => {
         let binary = '';

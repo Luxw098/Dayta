@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { generateKeyPairSync } from 'crypto';
 
+export let USER_KEYS = {};
 export let EXCHANGE_KEYS = {
   publicKey: "",
   privateKey: ""

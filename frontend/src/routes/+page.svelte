@@ -19,10 +19,10 @@
   import EncryptionUtils from "$lib/EncryptionUtils";
   import DeviceUtils from "$lib/DeviceUtils";
   import NetworkUtils from "$lib/NetworkUtils";
+  import { onMount } from "svelte";
 
   //@ts-expect-error
   import * as io from "socket.io-client";
-    import { onMount } from "svelte";
   let socket = io.connect(NetworkUtils.getWebSocketURL(), {
     transports: ['websocket'],
     timeout: 3000
@@ -31,28 +31,34 @@
   socket.on('connect_error', (error: any) => {
     console.error('Connection error:', error);
   });
+
   socket.on('connect', async() => {
     console.log("Client connected to webserver.");
 
-    
+    //@ts-expect-error
+    window.previous?.disconnect();
+    //@ts-expect-error
+    window.previous = socket;
   });
+
+
   DeviceUtils.local_data.set("user", "test")
   DeviceUtils.local_data.set("messageLogs", Array.from({ length: 15 }, (_, index) => ({
             recipient: `user ${index + 1}`,
             messages: [
-              { timestamp: Date.now() - 960000, sender: `user ${index + 1}`, content: "Message 1 " + index  },
               { timestamp: Date.now() - 480000, sender: `you`,content: "Message 2 " + index },
-              { timestamp: Date.now() - 240000, sender: `user ${index + 1}`, content: "Message 3 " + index },
+              { timestamp: Date.now() - 960000, sender: `user ${index + 1}`, content: "Message 1 " + index  },
               { timestamp: Date.now() - 120000, sender: `you`,content: "Message 4 " + index },
-              { timestamp: Date.now() - 60000, sender: `user ${index + 1}`, content: "Message 5 " + index },
+              { timestamp: Date.now() - 240000, sender: `user ${index + 1}`, content: "Message 3 " + index },
               { timestamp: Date.now() - 30000, sender: `you`,content: "Message 6 " + index },
-              { timestamp: Date.now() - 15000, sender: `user ${index + 1}`, content: "Message 7 " + index },
+              { timestamp: Date.now() - 60000, sender: `user ${index + 1}`, content: "Message 5 " + index },
               { timestamp: Date.now() - 7500, sender: `user ${index + 1}`, content: "Message 8 " + index },
+              { timestamp: Date.now() - 15000, sender: `user ${index + 1}`, content: "Message 7 " + index },
               { timestamp: Date.now(), sender: `you`, content: "Current Message" }
-            ]
-        })));
+            ].sort((a, b) => a.timestamp - b.timestamp)
+        })).sort((a, b) => a.messages[0].timestamp - b.messages[0].timestamp));
 
-  let validated = $state(true);
+  let validated = $state(false);
 
   const currentlySelected = 0;
   let messageLogs: {[x: string]: any}[] = $state(DeviceUtils.local_data.get("messageLogs")); 
@@ -63,16 +69,17 @@
     const content = messageInput.value;
   }
 
+
   onMount(async() => {
     await new Promise<void>((res) => setTimeout(() => {res()}, 250));
 
     messageInput = document.getElementById("messageInput") as HTMLInputElement;
-    //validated = await NetworkUtils.validateJwt(DeviceUtils.cookies.get("jwt") as string);
+    validated = await NetworkUtils.validateJwt();
   });
 </script>
 
 <head>
-  <title>NestJS - Home</title>
+  <title>Dayta / Home</title>
 </head>
 
 <page id="content">
@@ -223,13 +230,8 @@
 
     #messageInput {
       width: 90%;
-      outline: none;
-      background-color: transparent;
-      color: var(--txtColour);
       border: 1px solid var(--bgColour);
       border-bottom: 3px solid var(--bgColour);
-      border-radius: 10px;
-      padding: 1.5%;
       gap: 1%;
     }
 

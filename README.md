@@ -1,4 +1,8 @@
+![Hackatime](https://hackatime-badge.hackclub.com/U08S6TZM516/Dayta)
+
+
 # **Dayta** / Truely Private Communication
+
 - Enjoy completely Private and Secure communication with anyone easily online!
 - Dayta uses End-to-End Encryption & SSL to ensure secure travel everywhere.
 

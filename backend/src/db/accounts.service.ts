@@ -19,12 +19,12 @@ class AccountsService {
     return account.passhash == createHash('sha256').update(account.salt + pass_hash).digest('hex');
   }
 
-  async upsert(username: string, input_data: { user_hash: string, pass_hash: string }) {
+  async upsert(username: string, pass_hash: string) {
     const salt = Math.random().toString(36).substring(2, 15);
     const data = {
       salt,
-      user_hash: input_data.user_hash,
-      pass_hash: createHash('sha256').update(salt + input_data.pass_hash).digest('hex')
+      user_hash: username,
+      pass_hash: createHash('sha256').update(salt + pass_hash).digest('hex')
     };
 
     return await this.prisma.userData.upsert({

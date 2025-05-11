@@ -10,7 +10,7 @@ export class ApiController {
     return {
       status: "ok",
       code: "200",
-      message: "API is running"
+      body: "API is running"
     };
   }
 

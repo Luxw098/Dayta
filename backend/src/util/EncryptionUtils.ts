@@ -26,7 +26,6 @@ class EncryptionUtils {
 
     public static encryptData = (data: any) => {
         const encoded_data = new TextEncoder().encode(data);
-
         const encryption_settings = {
             key: EXCHANGE_KEYS.publicKey,
             oaepHash: "sha256"
@@ -41,7 +40,6 @@ class EncryptionUtils {
 
     public static decryptData = (data: string) => {
         const decoded_data = this.base64ToArrayBuffer(data);
-
         const decryption_settings = {
             key: EXCHANGE_KEYS.privateKey,
             oaepHash: "sha256"

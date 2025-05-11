@@ -12,42 +12,55 @@
   font-family: "Open Sans", sans-serif;
   box-sizing: border-box;
   overflow: hidden;
-}
 
-p {
-  margin: 0;
-}
+  p {
+    margin: 0;
+  }
 
-body {
-  margin: 0;
-  min-width: 100vw;
-  min-height: 100vh;
-  background-color: var(--bgColour);
-  color: var(--txtColour);
-}
+  body {
+    margin: 0;
+    min-width: 100vw;
+    min-height: 100vh;
+    background-color: var(--bgColour);
+    color: var(--txtColour);
+  }
 
-i {
-  padding-left: 5px;
-  padding-right: 5px;
-}
+  i {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
 
-main {
-  padding: 10px;
-}
+  input {
+    outline: none;
+    background-color: transparent;
+    border: 1px solid var(--fgColour);
+    border-radius: 10px;
+    padding: 1%;
+    color: var(--txtColour);
+  }
 
-nav {
-  height: 45px;
-  background: var(--fgColour);
-  box-shadow: 0 0 10px black;
-  padding: 5px;
-}
+  main {
+    padding: 10px;
+  }
 
-a {
-  transition: all 0.2s ease-in-out;
-  color: var(--txtColour);
-  text-decoration: none;
-}
-a:hover {
-  color: var(--hlColour);
-  cursor: pointer;
+  nav {
+    height: 45px;
+    background: var(--fgColour);
+    box-shadow: 0 0 10px black;
+    padding: 5px;
+  }
+
+  a {
+    transition: all 0.2s ease-in-out;
+    color: var(--txtColour);
+    text-decoration: none;
+    user-select: none; /* For modern browsers */
+    -webkit-user-select: none; /* For Safari */
+    -moz-user-select: none; /* For Firefox */
+    -ms-user-select: none; /* For Internet Explorer/Edge */
+  }
+  a:hover {
+    color: var(--hlColour);
+    cursor: pointer;
+  }
 }
